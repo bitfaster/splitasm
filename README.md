@@ -3,13 +3,19 @@
 A command line tool to break down BenchmarkDotNet asm markdown files into a single file per benchmark method to compare impact of changes.
 
 E.g.
-`splitasm.exe "C:\repo\BitFaster.Caching\BenchmarkDotNet.Artifacts\results"`
+`splitasm.exe C:\repo\BitFaster.Caching\BenchmarkDotNet.Artifacts\results`
 
 Output:
 
 - Am asm.md file per benchmarked method (assembly code per benchmarked method)
-- A summary of disassembled code size per benchmarked method:
+- A summary of disassembled code size per benchmarked method
 
+Output is grouped into directory by target benchmark then target framework:
+
+![image](https://user-images.githubusercontent.com/12851828/141734076-e8b12c93-d1b7-47b0-9018-2da1b75d35f8.png)
+
+
+Example summary of disassembled code size per benchmarked method:
 
 | #  | Method      | Size (bytes) |
 | -- | ----------- | ------------ |
