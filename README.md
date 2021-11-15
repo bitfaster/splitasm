@@ -5,7 +5,7 @@ A command line tool to break down BenchmarkDotNet asm markdown files into a sing
 E.g.
 `splitasm.exe C:\repo\BitFaster.Caching\BenchmarkDotNet.Artifacts\results`
 
-Output:
+## Output
 
 - Am asm.md file per benchmarked method (assembly code per benchmarked method)
 - A summary of disassembled code size per benchmarked method
@@ -32,3 +32,42 @@ Example summary of disassembled code size per benchmarked method:
 | 10 | System.Collections.Concurrent.ConcurrentDictionary`2+Tables[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]].GetBucketAndLock(Int32, UInt32 ByRef | 123 |
 | 11 | System.Collections.Concurrent.ConcurrentQueueSegment`1[[System.__Canon, System.Private.CoreLib]].TryDequeue(System.__Canon ByRef | 270 |
 | 12 | System.Collections.Concurrent.ConcurrentQueueSegment`1[[System.__Canon, System.Private.CoreLib]].TryEnqueue(System.__Canon | 125 |
+
+## Github action integration
+  
+[Example github action](https://github.com/bitfaster/BitFaster.Caching/blob/main/.github/workflows/benchpr.yml) that clones the repo, builds splitasm then uses it to process benchmark output:
+  
+  ```
+ jobs:
+  bench:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Clone splitasm repo
+      uses: actions/checkout@v2
+      with:
+        repository: bitfaster/splitasm
+        path: splitasm
+        ref: ''
+    - name: Build split asm
+      run: dotnet build splitasm --configuration Release
+    - name: Benchmark
+      run: dotnet run --project "BitFaster.Caching.Benchmarks" -f net6.0 -c Release --filter *Lru*
+    - name: Post process disassembly
+      run: splitasm\splitasm\bin\Release\net6.0\splitasm.exe %GITHUB_WORKSPACE%\BenchmarkDotNet.Artifacts\results
+      shell: cmd
+    - name: Publish Results
+      uses: actions/upload-artifact@v1
+      with:
+        name: Benchmark Artifacts
+        path: BenchmarkDotNet.Artifacts```
