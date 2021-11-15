@@ -1,6 +1,6 @@
 # splitasm
 
-A command line tool to break down BenchmarkDotNet asm markdown files into a single file per benchmark method to compare impact of changes.
+A command line tool to break down BenchmarkDotNet asm markdown files into a single file per benchmark method. Output in this format enables use of file diffs to assess impact of code changes on disassembler output.
 
 E.g.
 `splitasm.exe C:\repo\BitFaster.Caching\BenchmarkDotNet.Artifacts\results`
